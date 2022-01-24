@@ -100,10 +100,7 @@ def fullAnalysis():
 
     allPlaylistsDF.insert(0,"Playlist Name", playlistName,True)
 
-    allPlaylistsDF.to_csv('output.csv')
+    # allPlaylistsDF.to_csv('output.csv')
     print(allPlaylistsDF)
 
 fullAnalysis()
-# songsDF = getPlaylistSongs(playlistLink)
-# featuresDF = getSongFeatures(songsDF)
-# fullDetailsDF = combineDFs(songsDF, featuresDF)
