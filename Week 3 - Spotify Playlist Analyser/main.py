@@ -3,16 +3,17 @@ import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 from credentials import clientID, clientSecret
 import requests 
+import plotly.express as px
+import plotly.graph_objects as go
+
 
 client_credentials_manager = SpotifyClientCredentials(client_id=clientID, client_secret=clientSecret)
 sp = spotipy.Spotify(client_credentials_manager = client_credentials_manager)
 
 def getPlaylistSongs(link):
     uris,names,durations,explicits,tracknumbers = [],[],[],[],[]
-    # playlist = sp.playlist_items(link)
     playlist = sp.playlist_tracks(link)
     for item in playlist['items']:
-        # print(item['track']['name'],item['track']['uri'],item['track']['duration_ms'],item['track']['explicit'],item['track']['track_number'])
         uris.append(item['track']['uri'])
         names.append(item['track']['name'])
         durations.append(item['track']['duration_ms'])
@@ -62,8 +63,6 @@ def getSongFeatures(songsDF):
 
 def combineDFs(songsDF, featuresDF):
     fullDetailsDF = songsDF.merge(featuresDF,left_index = True, right_index = True)
-
-    # print(fullDetailsDF.head())
     avgFeatures = fullDetailsDF.describe().loc['mean']
     print(fullDetailsDF.describe().loc['mean'])
 
@@ -99,8 +98,40 @@ def fullAnalysis():
     playlistName = ['Good Estrogen','Workout','Alternative Rock Playlist','Rap Playlist', 'Party Playlist']
 
     allPlaylistsDF.insert(0,"Playlist Name", playlistName,True)
-
-    # allPlaylistsDF.to_csv('output.csv')
     print(allPlaylistsDF)
+
+
+    cat = ['danceability',
+        'energy',
+        'speechiness',
+        'acousticness',
+        'instrumentalness',
+        'valence']
+
+    fig = go.Figure()
+    for index,row in allPlaylistsDF.iterrows():
+        fig.add_trace(go.Scatterpolar(
+            r = [row['danceability'],
+                row['energy'],
+                row['speechiness'],
+                row['acousticness'],
+                row['instrumentalness'],
+                row['valence']],
+        theta = cat,
+        fill = 'toself',
+        name = row['Playlist Name']
+        ))
+    
+    fig.update_layout(
+    polar=dict(
+        radialaxis=dict(
+        visible=True,
+        range=[0, 1]
+        )),
+    showlegend=True
+    )
+    fig.show()
+    fig.write_html("radar_graph_for_playlists.html")
+    print('Done Analysis.')
 
 fullAnalysis()
