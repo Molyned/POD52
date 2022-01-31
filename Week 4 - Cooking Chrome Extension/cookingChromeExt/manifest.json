@@ -1,0 +1,23 @@
+{
+    "name": "All Recipe, No family Tree",
+    "description": "Avoid all the random stuff about the author and just get to the recipe at the bottom!",
+    "version": "1.0",
+    "manifest_version": 3,
+    "author": "Daniel Molyneaux",
+    "action":{
+        "default_popup": "popup.html",
+        "default_title": "chrome test"
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "run_at": "document_end",
+            "css": ["styles.css"],
+            "matches": ["https://*/*"],
+            "js": ["contentScript.js"]
+        }
+      ],
+    "permissions": ["storage","tabs","activeTab"]
+  }
